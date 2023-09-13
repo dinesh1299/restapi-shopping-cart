@@ -33,33 +33,38 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# def title_length(val):
-#     if len(val)<3:
-#         raise serializers.ValidationError('Title length should be greater than 2')
+def name_length(val):
+    if len(val)<3:
+        raise serializers.ValidationError('Name length should be greater than 2')
 
-# class MovieSerializer(serializers.Serializer):
-#     id = serializers.IntegerField(read_only=True)   
-#     language = serializers.CharField()
-#     title = serializers.CharField(validators=[title_length])
-#     release = serializers.DateField()
+class OrderrSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)   
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    name = serializers.CharField(validators=[name_length])
+    product=serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),allow_null=True)
+    dateOrdered=serializers.DateTimeField(read_only=True)
+    ordered=serializers.BooleanField(default=False)
+    
 
-#     def create(self, validated_data):
-#         return movies.objects.create(**validated_data)
+    def create(self, validated_data):
+        return Order.objects.create(**validated_data)
     
-#     def update(self, instance, validated_data):
-#         instance.language = validated_data.get('language',instance.language)
-#         instance.title = validated_data.get('title', instance.title)
-#         instance.release = validated_data.get('release', instance.release)
-#         instance.save()
-#         return instance
+    def update(self, instance, validated_data):
+        instance.user = validated_data.get('user',instance.user)
+        instance.name = validated_data.get('name', instance.name)
+        instance.product = validated_data.get('product', instance.product)
+        instance.dateOrdered = validated_data.get('dateOrdered', instance.dateOrdered)
+        instance.ordered = validated_data.get('ordered', instance.ordered)
+        instance.save()
+        return instance
     
-#     def validate(self, attrs):
-#         if attrs['title'] == attrs['language']:
-#             raise serializers.ValidationError('Title and language should not same')
-#         return attrs
+    def validate(self, attrs):
+        if attrs['name'] == attrs['product']:
+            raise serializers.ValidationError('Name and Product should not same')
+        return attrs
     
-#     def validate_language(self, value):
-#         if value!='tamil':
-#             raise serializers.ValidationError('Language shoulbd be tamil')
-#         else:
-#             return value
+    def validate_order(self, value):
+        if value=='order':
+            raise serializers.ValidationError("Name shouldn't be order")
+        else:
+            return value
