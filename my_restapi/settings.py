@@ -37,7 +37,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     # 'DEFAULT_THROTTLE_CLASSES': [
     #     'rest_framework.throttling.AnonRateThrottle',
@@ -47,7 +47,7 @@ REST_FRAMEWORK = {
         'anon': '1/day',
         'user': '3/day',
         'rating-list':'3/day',
-        'rating-detmail':'10/day'
+        'rating-detail':'10/day'
     },
     # 'DEFAULT_RENDERER_CLASSES':[
     #     'rest_framework.renderers.JSONRenderer'

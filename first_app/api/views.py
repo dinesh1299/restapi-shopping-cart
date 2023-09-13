@@ -16,6 +16,7 @@ from.paginations import CustomPagination, CustomLimitsetPagination, CustomCursor
 
 class ProductDetailFilter(generics.ListAPIView):
     queryset = Product.objects.all()
+    permission_classes = [IsAuthenticated]
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name','price']
@@ -32,6 +33,26 @@ class ProductDetailOrdering(generics.ListAPIView):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['name','price']
 
+class ThrottleRatingDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [RatingDetailThrottler]
+    queryset = Ratings.objects.all()
+    serializer_class = RatingSerializer
+
+class ThrottleRatingList(generics.ListAPIView):
+    permission_classes=[IsAuthenticated]
+    throttle_classes = [RatingListThrottler]
+    """throttle_classes = [RatingListThrottler] and below commented code will do same functionality"""
+    # throttle_classes = [ScopedRateThrottle]
+    # throttle_scope = 'rating-list'
+    queryset = Ratings.objects.all()
+    serializer_class = RatingSerializer
+
+class PageRatingList(generics.ListAPIView):
+    permission_classes=[IsAuthenticated]
+    pagination_class = CustomCursorPagination #CustomLimitsetPagination #CustomPagination
+    queryset = Ratings.objects.all()
+    serializer_class = RatingSerializer
 
 class UserRatingDetail(generics.ListAPIView):
     serializer_class = RatingSerializer
@@ -54,16 +75,11 @@ class UserRatingDetail(generics.ListAPIView):
 
 class RatingList(generics.ListAPIView):
     permission_classes=[IsAuthenticated]
-    # throttle_classes = [ScopedRateThrottle]
-    # throttle_scope = 'rating-list'
-    pagination_class = CustomCursorPagination #CustomLimitsetPagination #CustomPagination
-    
     queryset = Ratings.objects.all()
     serializer_class = RatingSerializer
 
 class RatingCreate(generics.CreateAPIView):
     permission_classes=[IsAuthenticated]
-    # throttle_classes = [RatingListThrottler]
     serializer_class = RatingCreateSerializer
 
     def perform_create(self, serializer):
@@ -81,7 +97,6 @@ class RatingCreate(generics.CreateAPIView):
 
 class RatingDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    # throttle_classes = [RatingDetailThrottler]
     queryset = Ratings.objects.all()
     serializer_class = RatingSerializer
 
@@ -93,10 +108,13 @@ class Product_ViewSet(viewsets.ViewSet):
         return Response(serializer.data)
     
     def retrieve(self,request,pk):
-        queryset = Product.objects.get(pk=pk)
-        serializer = ProductSerializer(queryset)
-        return Response(serializer.data)
-
+        try:
+            queryset = Product.objects.get(pk=pk)
+            serializer = ProductSerializer(queryset)
+            return Response(serializer.data)
+        except:
+            return Response("Product Doesn't Exists",status=status.HTTP_404_NOT_FOUND)
+        
 class OrderCreate(generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -164,7 +182,7 @@ class RatingLst(APIView):
             else:
                 return Response(serializer.errors)
 
-class RatingDetail(APIView):
+class RatingDetaill(APIView):
     def get(self,request,id):
         rating = Ratings.objects.get(id=id)
         serializer=RatingSerializer(rating)
@@ -183,7 +201,7 @@ class RatingDetail(APIView):
 class GetProducts(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # pagination_class = CustomPagination
+    pagination_class = CustomPagination
 
 # class GetProducts(APIView): 
     # def get(self,request):
