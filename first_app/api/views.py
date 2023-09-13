@@ -276,37 +276,37 @@ class GetCategory(APIView):
 
 
 
-# @api_view(['GET','POST'])
-# def get_movies(request):
-#     if request.method=='POST':
-#         serializer=MovieSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors)
-#     if request.method=='GET':
-#         movie = movies.objects.all()
-#         serializer = MovieSerializer(movie, many=True)
-#         return Response(serializer.data)
+@api_view(['GET','POST'])
+def get_products(request):
+    if request.method=='POST':
+        serializer=ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+    if request.method=='GET':
+        movie = Product.objects.all()
+        serializer = ProductSerializer(movie, many=True)
+        return Response(serializer.data)
 
-# @api_view(['GET','PUT','DELETE'])
-# def get_movie(request,id):
-#     if request.method=='GET':
-#         try:
-#             movie = movies.objects.get(id=id)
-#         except:
-#             return Response({'error':'Not found'},status=status.HTTP_404_NOT_FOUND)
-#         serializer = MovieSerializer(movie)
-#         return Response(serializer.data)
-#     if request.method=='PUT':
-#         movie = movies.objects.get(id=id)
-#         serializer=MovieSerializer(movie,data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors)
-#     if request.method == 'DELETE':
-#         movies.objects.get(id=id).delete()
-#         return Response(status=status.HTTP_404_NOT_FOUND)
+@api_view(['GET','PUT','DELETE'])
+def get_movie(request,id):
+    if request.method=='GET':
+        try:
+            movie = Product.objects.get(id=id)
+        except:
+            return Response({'error':'Not found'},status=status.HTTP_404_NOT_FOUND)
+        serializer = ProductSerializer(movie)
+        return Response(serializer.data)
+    if request.method=='PUT':
+        movie = Product.objects.get(id=id)
+        serializer=ProductSerializer(movie,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+    if request.method == 'DELETE':
+        Product.objects.get(id=id).delete()
+        return Response(status=status.HTTP_404_NOT_FOUND)
