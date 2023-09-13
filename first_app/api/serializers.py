@@ -33,14 +33,14 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-def title_length(val):
+def name_length(val):
     if len(val)<3:
-        raise serializers.ValidationError('Title length should be greater than 2')
+        raise serializers.ValidationError('Name length should be greater than 2')
 
 class OrderrSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)   
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
-    name = serializers.CharField(validators=[title_length])
+    name = serializers.CharField(validators=[name_length])
     product=serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),allow_null=True)
     dateOrdered=serializers.DateTimeField(read_only=True)
     ordered=serializers.BooleanField(default=False)
